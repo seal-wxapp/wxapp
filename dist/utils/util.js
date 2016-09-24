@@ -1,0 +1,1 @@
+function formatTime(t){var e=t.getFullYear(),r=t.getMonth()+1,o=t.getDate(),m=t.getHours(),n=t.getMinutes(),a=t.getSeconds();return[e,r,o].map(formatNumber).join("/")+" "+[m,n,a].map(formatNumber).join(":")}function formatNumber(t){return t=t.toString(),t[1]?t:"0"+t}module.exports={formatTime:formatTime};

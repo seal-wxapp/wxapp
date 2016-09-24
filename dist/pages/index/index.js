@@ -1,0 +1,1 @@
+var app=getApp();Page({data:{motto:"Hello World",userInfo:{}},bindViewTap:function(){wx.navigateTo({url:"../logs/logs"})},onLoad:function(){console.log("onLoad");var o=this;app.getUserInfo(function(a){o.setData({userInfo:a})})}});
