@@ -1,7 +1,7 @@
 {
   "name": "wxapp",
   "version": "1.0.0",
-  "description": "",
+  "description": "wxapp-cli template",
   "main": "index.js",
   "scripts": {
     "dev": "NODE_ENV=dev gulp dev",
@@ -17,6 +17,7 @@
     "babel-preset-es2015": "^6.14.0",
     "babel-preset-stage-2": "^6.13.0",
     "babel-runtime": "^6.11.6",
+    "chalk": "^1.1.3",
     "cssnano": "^3.7.5",
     "gulp": "^3.9.1",
     "gulp-babel": "^6.1.2",
