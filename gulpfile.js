@@ -20,14 +20,16 @@ var isBuild = false;
 var webpackConfig = {
 	resolve: {
 		root: path.join(__dirname, 'node_modules'),
-		extensions: ['', '.js', '.vue', '.scss', '.css']
+		extensions: ['', '.js', '.scss', '.css']
 	},
 	output: {
 		// publicPath: ''+ CDN +'/static/',
 		filename: '[name].js',
-		chunkFilename: 'es6/[id].js?[hash]'
 	},
 	module: {
+		preLoaders: [
+			// { test: /\.js$/, loader: "eslint-loader", exclude: /node_modules/ }
+		],
 		loaders: [
 			{test: /\.js$/, loader: 'babel', exclude: /node_modules/},
 		]
