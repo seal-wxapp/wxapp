@@ -65,38 +65,38 @@
 	console.log(util);
 	var app = getApp();
 	Page({
-	  data: {
-	    motto: 'Hello World',
-	    userInfo: {}
-	  },
-	  //事件处理函数
-	  bindViewTap: function bindViewTap() {
-	    wx.navigateTo({
-	      url: '../logs/logs'
-	    });
-	  },
-	  onLoad: function onLoad() {
-	    console.log('onLoad');
-	    var that = this;
-	    //调用应用实例的方法获取全局数据
-	    pro('lalal').then(function (res) {
-	      console.log(res);
-	    });
-	    app.getUserInfo(function (userInfo) {
-	      //更新数据
-	      that.setData({
-	        userInfo: userInfo
-	      });
-	    });
-	  }
+		data: {
+			motto: 'Hello World',
+			userInfo: {}
+		},
+		//事件处理函数
+		bindViewTap: function bindViewTap() {
+			wx.navigateTo({
+				url: '../logs/logs'
+			});
+		},
+		onLoad: function onLoad() {
+			console.log('onLoad');
+			var that = this;
+			//调用应用实例的方法获取全局数据
+			pro('lalal').then(function (res) {
+				console.log(res);
+			});
+			app.getUserInfo(function (userInfo) {
+				//更新数据
+				that.setData({
+					userInfo: userInfo
+				});
+			});
+		}
 	});
 
 	function pro(msg) {
-	  return new _promise2.default(function (resolve, reject) {
-	    setTimeout(function () {
-	      resolve(msg);
-	    }, 1000);
-	  });
+		return new _promise2.default(function (resolve, reject) {
+			setTimeout(function () {
+				resolve(msg);
+			}, 1000);
+		});
 	}
 
 /***/ },
@@ -1562,25 +1562,23 @@
 
 	'use strict';
 
-	function formatTime(date) {
-	  var year = date.getFullYear();
-	  var month = date.getMonth() + 1;
-	  var day = date.getDate();
-
-	  var hour = date.getHours();
-	  var minute = date.getMinutes();
-	  var second = date.getSeconds();
-
-	  return [year, month, day].map(formatNumber).join('/') + ' ' + [hour, minute, second].map(formatNumber).join(':');
+	function formatNumber(n) {
+		n = n.toString();
+		return n[1] ? n : '0' + n;
 	}
 
-	function formatNumber(n) {
-	  n = n.toString();
-	  return n[1] ? n : '0' + n;
+	function formatTime(date) {
+		var year = date.getFullYear();
+		var month = date.getMonth() + 1;
+		var day = date.getDate();
+		var hour = date.getHours();
+		var minute = date.getMinutes();
+		var second = date.getSeconds();
+		return [year, month, day].map(formatNumber).join('/') + ' ' + [hour, minute, second].map(formatNumber).join(':');
 	}
 
 	module.exports = {
-	  formatTime: formatTime
+		formatTime: formatTime
 	};
 
 /***/ }

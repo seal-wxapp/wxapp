@@ -23,7 +23,6 @@ var webpackConfig = {
 		extensions: ['', '.js', '.scss', '.css']
 	},
 	output: {
-		// publicPath: ''+ CDN +'/static/',
 		filename: '[name].js',
 	},
 	module: {
@@ -56,7 +55,7 @@ var src  = {
 	json : './src/**/*.json',
 	views: './src/**/*.{html,wxml}'
 };
-var dist = './dist';
+var dist = './dist/';
 gulp.task('dev',function() {
 	gulp.start('views','sass','wxss','images','fonts','js','json');
 });
@@ -64,12 +63,13 @@ gulp.task('build',function() {
 	isBuild = true;
 	build(function () {
 		setTimeout(function() {
-			console.log(chalk.green('	Build success!'))
+			console.log();
+			console.log(chalk.green('	Build success!'));
 		},0)
 	});
 });
 gulp.task('views', function () {
-	watch([src.views]).on('change',function() {
+	watch([src.views]).on('change',function(e) {
 		views();
 	})
 });
@@ -78,33 +78,39 @@ gulp.task('json', function () {
 		json()
 	});
 });
+
 gulp.task('sass', function () {
 	watch([src.sass], function (event) {
 		var paths = watchPath(event, src.sass, dist);
-		compileSass(paths.srcPath)
-	});
+		compileSass(paths.srcPath,paths.srcDir.replace('src','dist'))
+		
+	})
 });
-
 gulp.task('wxss',function() {
 	watch([src.wxss], function (event) {
 		var paths = watchPath(event, src.wxss, dist);
-		compileWxss(paths.srcPath); // 编译 .wxss
+		compileWxss(paths.srcPath,paths.srcDir.replace('src','dist')); // 编译 .wxss
 	});
 	
 });
 gulp.task('images', function () {
 	watch([src.images]).on('change',function() {
 		images();
+	}).on('add',function() {
+		images();
 	})
 });
 gulp.task('fonts', function () {
 	watch([src.fonts]).on('change',function() {
 		fonts()
+	}).on('add',function() {
+		fonts();
 	})
 });
 gulp.task('js', function () {
 	watch([src.js], function (event) {
 		var paths = watchPath(event, src.js, dist);
+		// console.log(paths);
 		compileJS(paths.srcPath);
 	})
 });
@@ -126,7 +132,8 @@ function compileJS(path,cb) {
 	gulp.src(path)
 	.pipe(named(function (file) {
 		var path = JSON.parse(JSON.stringify(file)).history[0];
-		var target = path.split('src/')[1];
+		var sp = path.indexOf('\\') > -1 ? 'src\\' : 'src/';
+		var target = path.split(sp)[1];
 		return target.substring(0,target.length - 3);
 	}))
 	.pipe(webpackStream(webpackConfig))
@@ -137,7 +144,7 @@ function compileJS(path,cb) {
 	.pipe(gulp.dest(dist))
 	cb && cb();
 }
-function compileWxss(src) {
+function compileWxss(src,dist) {
 	gulp.src(src)
 	.pipe(base64({
 		extensions: ['png', /\.jpg#datauri$/i],
@@ -146,7 +153,7 @@ function compileWxss(src) {
 	.pipe(postcss(processes))
 	.pipe(gulp.dest(dist))
 }
-function compileSass(src) {
+function compileSass(src,dist) {
 	gulp.src(src)
 	.pipe(sass().on('error', sass.logError))
 	.pipe(base64({
