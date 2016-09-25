@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "dev": "gulp dev",
-    "build": "gulp build"
+    "dev-es5": "gulp dev:es5",
+    "build": "gulp build",
+    "build-es5": "gulp build:es5"
   },
   "author": "kodo",
   "license": "ISC",
@@ -19,6 +21,7 @@
     "babel-preset-stage-2": "^6.13.0",
     "babel-runtime": "^6.11.6",
     "chalk": "^1.1.3",
+    "cross-env": "^3.0.0",
     "cssnano": "^3.7.5",
     "eslint": "^3.6.0",
     "eslint-config-airbnb-base": "^7.2.0",

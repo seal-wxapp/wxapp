@@ -42,7 +42,7 @@ var webpackConfig = {
 };
 
 var processes = [
-	autoprefixer({ browsers: ['last 2 version', 'safari 5', 'opera 12.1', 'ios 6', 'android 4', '> 10%'] }),
+	autoprefixer({ browsers: ['last 2 version', 'safari 5', 'opera 12.1', 'ios 6', 'android 4'] }),
 	precss,
 	cssnano
 ];
@@ -61,15 +61,29 @@ var dist = './dist/';
 gulp.task('dev', function () {
 	gulp.start('views', 'sass', 'wxss', 'images', 'fonts', 'js', 'json');
 });
+gulp.task('dev:es5', function () {
+	gulp.start('views', 'sass', 'wxss', 'images', 'fonts', 'js:es5', 'json');
+});
+
 gulp.task('build', function () {
 	isBuild = true;
-	build(function () {
+	build(false,function () {
 		setTimeout(function () {
 			console.log();
 			console.log(chalk.green('	Build success!'));
 		}, 0)
 	});
 });
+gulp.task('build:es5', function () {
+	isBuild = true;
+	build(true,function () {
+		setTimeout(function () {
+			console.log();
+			console.log(chalk.green('	Build success!'));
+		}, 0)
+	});
+});
+
 gulp.task('views', function () {
 	watch([src.views]).on('change', function (e) {
 		views();
@@ -112,8 +126,13 @@ gulp.task('fonts', function () {
 gulp.task('js', function () {
 	watch([src.js], function (event) {
 		var paths = watchPath(event, src.js, dist);
-		// console.log(paths);
 		compileJS(paths.srcPath);
+	})
+});
+gulp.task('js:es5', function () {
+	watch([src.js], function (event) {
+		var paths = watchPath(event, src.js, dist);
+		compileJSes5(paths.srcPath,paths.srcDir.replace('src', 'dist'));
 	})
 });
 
@@ -125,6 +144,9 @@ gulp.task('wxss:build', function () {
 });
 gulp.task('js:build', function () {
 	return compileJS([src.js]);
+});
+gulp.task('js:es5:build', function () {
+	return compileJSes5([src.js],dist);
 });
 function compileJS(path) {
 	
@@ -139,6 +161,11 @@ function compileJS(path) {
 	.on('error', function (err) {
 		this.end()
 	})
+	.pipe(ifElse(isBuild === true, ugjs))
+	.pipe(gulp.dest(dist))
+}
+function compileJSes5(path,dist) {
+	return gulp.src(path)
 	.pipe(ifElse(isBuild === true, ugjs))
 	.pipe(gulp.dest(dist))
 }
@@ -186,8 +213,9 @@ function json() {
 	gulp.src(src.json)
 	.pipe(gulp.dest(dist))
 }
-function build(cb) {
-	runSequence(['js:build','sass:build', 'wxss:build'], function () {
+function build(ises5,cb) {
+	var jsbuild = ises5 ? 'js:es5:build' : 'js:build';
+	runSequence([jsbuild,'sass:build', 'wxss:build'], function () {
 		views();
 		images();
 		fonts();
