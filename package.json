@@ -4,7 +4,7 @@
   "description": "wxapp-cli template",
   "main": "index.js",
   "scripts": {
-    "dev": "NODE_ENV=dev gulp dev",
+    "dev": "gulp dev",
     "build": "gulp build"
   },
   "author": "kodo",
