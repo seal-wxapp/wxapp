@@ -29,7 +29,7 @@ Page({
 		})
 	}
 })
- 
+    
 function pro(msg) {
 	return new Promise((resolve,reject) => {
 		setTimeout(() => {

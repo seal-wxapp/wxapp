@@ -1,21 +1,23 @@
-var path  = require('path');
-var gulp  = require('gulp');
-var ugjs = require('gulp-uglify');
-var watch = require('gulp-watch');
-var named = require('vinyl-named');
-var postcss = require('gulp-postcss'); //postcss本身
+var path          = require('path');
+var gulp          = require('gulp');
+var ugjs          = require('gulp-uglify');
+var watch         = require('gulp-watch');
+var named         = require('vinyl-named');
+var postcss       = require('gulp-postcss');
 var webpackStream = require('webpack-stream');
-var watchPath = require('gulp-watch-path');
-var chalk = require('chalk');
-var rename = require('gulp-rename');
-var ifElse = require('gulp-if-else');
-var base64       = require('gulp-base64');
-var autoprefixer = require('autoprefixer');
-var precss       = require('precss'); //提供像scss一样的语法
-var cssnano      = require('cssnano');  //更好用的css压缩!
-var sass         = require('gulp-sass');
+var watchPath     = require('gulp-watch-path');
+var chalk         = require('chalk');
+var rename        = require('gulp-rename');
+var ifElse        = require('gulp-if-else');
+var base64        = require('gulp-base64');
+var autoprefixer  = require('autoprefixer');
+var precss        = require('precss');
+var cssnano       = require('cssnano');
+var sass          = require('gulp-sass');
+var runSequence = require('run-sequence');
 
-var isBuild = false;
+
+var isBuild       = false;
 
 var webpackConfig = {
 	resolve: {
@@ -30,17 +32,17 @@ var webpackConfig = {
 			// { test: /\.js$/, loader: "eslint-loader", exclude: /node_modules/ }
 		],
 		loaders: [
-			{test: /\.js$/, loader: 'babel', exclude: /node_modules/},
+			{ test: /\.js$/, loader: 'babel', exclude: /node_modules/ },
 		]
 	},
 	babel: { //配置babel
-		"presets": ["es2015",'stage-2'],
+		"presets": ["es2015", 'stage-2'],
 		"plugins": ["transform-runtime"]
 	}
 };
 
 var processes = [
-	autoprefixer({browsers: ['last 2 version', 'safari 5', 'opera 12.1', 'ios 6', 'android 4', '> 10%']}),
+	autoprefixer({ browsers: ['last 2 version', 'safari 5', 'opera 12.1', 'ios 6', 'android 4', '> 10%'] }),
 	precss,
 	cssnano
 ];
@@ -50,31 +52,31 @@ var src  = {
 	images: './src/**/*.{png,jpg,jpeg}',
 	js: './src/**/*.js',
 	sass: './src/**/*.scss',
-	wxss : './src/**/*.wxss',
-	wxml : './src/**/*.wxml',
-	json : './src/**/*.json',
+	wxss: './src/**/*.wxss',
+	wxml: './src/**/*.wxml',
+	json: './src/**/*.json',
 	views: './src/**/*.{html,wxml}'
 };
 var dist = './dist/';
-gulp.task('dev',function() {
-	gulp.start('views','sass','wxss','images','fonts','js','json');
+gulp.task('dev', function () {
+	gulp.start('views', 'sass', 'wxss', 'images', 'fonts', 'js', 'json');
 });
-gulp.task('build',function() {
+gulp.task('build', function () {
 	isBuild = true;
 	build(function () {
-		setTimeout(function() {
+		setTimeout(function () {
 			console.log();
 			console.log(chalk.green('	Build success!'));
-		},0)
+		}, 0)
 	});
 });
 gulp.task('views', function () {
-	watch([src.views]).on('change',function(e) {
+	watch([src.views]).on('change', function (e) {
 		views();
 	})
 });
 gulp.task('json', function () {
-	watch([src.json]).on('change',function() {
+	watch([src.json]).on('change', function () {
 		json()
 	});
 });
@@ -82,28 +84,28 @@ gulp.task('json', function () {
 gulp.task('sass', function () {
 	watch([src.sass], function (event) {
 		var paths = watchPath(event, src.sass, dist);
-		compileSass(paths.srcPath,paths.srcDir.replace('src','dist'))
+		compileSass(paths.srcPath, paths.srcDir.replace('src', 'dist'))
 		
 	})
 });
-gulp.task('wxss',function() {
+gulp.task('wxss', function () {
 	watch([src.wxss], function (event) {
 		var paths = watchPath(event, src.wxss, dist);
-		compileWxss(paths.srcPath,paths.srcDir.replace('src','dist')); // 编译 .wxss
+		compileWxss(paths.srcPath, paths.srcDir.replace('src', 'dist')); // 编译 .wxss
 	});
 	
 });
 gulp.task('images', function () {
-	watch([src.images]).on('change',function() {
+	watch([src.images]).on('change', function () {
 		images();
-	}).on('add',function() {
+	}).on('add', function () {
 		images();
 	})
 });
 gulp.task('fonts', function () {
-	watch([src.fonts]).on('change',function() {
+	watch([src.fonts]).on('change', function () {
 		fonts()
-	}).on('add',function() {
+	}).on('add', function () {
 		fonts();
 	})
 });
@@ -115,37 +117,33 @@ gulp.task('js', function () {
 	})
 });
 
-gulp.task('view:build',function() {
-	views()
-})
 gulp.task('sass:build', function () {
-	compileSass(src.sass)
+	return compileSass(src.sass,dist)
 });
 gulp.task('wxss:build', function () {
-	compileWxss(src.wxss)
+	return compileWxss(src.wxss,dist)
 });
 gulp.task('js:build', function () {
-	compileJS([src.js]);
+	return compileJS([src.js]);
 });
-function compileJS(path,cb) {
+function compileJS(path) {
 	
-	gulp.src(path)
+	return gulp.src(path)
 	.pipe(named(function (file) {
-		var path = JSON.parse(JSON.stringify(file)).history[0];
-		var sp = path.indexOf('\\') > -1 ? 'src\\' : 'src/';
+		var path   = JSON.parse(JSON.stringify(file)).history[0];
+		var sp     = path.indexOf('\\') > -1 ? 'src\\' : 'src/';
 		var target = path.split(sp)[1];
-		return target.substring(0,target.length - 3);
+		return target.substring(0, target.length - 3);
 	}))
 	.pipe(webpackStream(webpackConfig))
-	.on('error',function(err) {
+	.on('error', function (err) {
 		this.end()
 	})
-	.pipe(ifElse(isBuild === true,ugjs))
+	.pipe(ifElse(isBuild === true, ugjs))
 	.pipe(gulp.dest(dist))
-	cb && cb();
 }
-function compileWxss(src,dist) {
-	gulp.src(src)
+function compileWxss(src, dist) {
+	return gulp.src(src)
 	.pipe(base64({
 		extensions: ['png', /\.jpg#datauri$/i],
 		maxImageSize: 10 * 1024 // bytes,
@@ -153,14 +151,14 @@ function compileWxss(src,dist) {
 	.pipe(postcss(processes))
 	.pipe(gulp.dest(dist))
 }
-function compileSass(src,dist) {
-	gulp.src(src)
+function compileSass(src, dist) {
+	return gulp.src(src)
 	.pipe(sass().on('error', sass.logError))
 	.pipe(base64({
 		extensions: ['png', /\.jpg#datauri$/i],
 		maxImageSize: 10 * 1024 // bytes,
 	}))
-	.pipe(ifElse(isBuild === true,function() {
+	.pipe(ifElse(isBuild === true, function () {
 		return postcss(processes);
 	}))
 	.pipe(rename({
@@ -189,10 +187,13 @@ function json() {
 	.pipe(gulp.dest(dist))
 }
 function build(cb) {
-	gulp.start('sass:build','wxss:build','js:build');
-	views();
-	images();
-	fonts();
-	json();
-	cb && cb()
+	runSequence(['js:build','sass:build', 'wxss:build'], function () {
+		views();
+		images();
+		fonts();
+		json();
+		cb && cb()
+	});
+	
 }
+
