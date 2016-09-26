@@ -1,1 +1,10 @@
-<view>111</view>
+<view class="img">
+	<image class="avatar" src="http://7xqsim.com1.z0.glb.clouddn.com/LibitLogo.jpg"/>
+	<text class="info">成功使用wxapp</text>
+	<text class="info">issue: <br/><a>https://github.com/MeCKodo/wxapp-cli/issues</a>
+	</text>
+</view>
+<view>
+	<text class="motto">接下来可以在src下创建 .html|.scss|.wxss|.wxml </text>
+	<text class="motto">修改代码试试</text>
+</view>
