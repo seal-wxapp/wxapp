@@ -1,17 +1,1 @@
-var server1 = 'https://im.server1.url';
-var server2 = 'https://im.server2.url';
-
-var server = null;
-// es6 版本
-if(dev === 'dev') {
-	server = server1;
-} else if(dev === 'production') {
-	server = server2;
-}
-// es5 版本
-/*if('dev' === 'dev') { // dev 要写字符串
-	server = server1;
-} else if('dev' === 'production') {
-	server = server2;
-}*/
-module.exports = server;
+!function(r){function t(o){if(e[o])return e[o].exports;var n=e[o]={exports:{},id:o,loaded:!1};return r[o].call(n.exports,n,n.exports,t),n.loaded=!0,n.exports}var e={};return t.m=r,t.c=e,t.p="",t(0)}([function(r,t,e){r.exports=e(4)},,,,function(r,t,e){"use strict";var o="https://im.server2.url",n=null;n=o,r.exports=n}]);
