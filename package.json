@@ -4,10 +4,10 @@
   "description": "wxapp-cli template",
   "main": "index.js",
   "scripts": {
-    "dev": "gulp dev",
-    "dev-es5": "gulp dev:es5",
-    "build": "gulp build",
-    "build-es5": "gulp build:es5"
+    "dev": "cross-env NODE_ENV=dev gulp dev",
+    "dev-es5": "cross-env NODE_ENV=dev gulp dev:es5",
+    "build": "cross-env NODE_ENV=production gulp build",
+    "build-es5": "cross-env NODE_ENV=production gulp build:es5"
   },
   "author": "kodo",
   "license": "ISC",
@@ -35,6 +35,7 @@
     "gulp-if-else": "^1.0.3",
     "gulp-postcss": "^6.2.0",
     "gulp-rename": "^1.2.2",
+    "gulp-replace": "^0.5.4",
     "gulp-sass": "^2.3.2",
     "gulp-uglify": "^2.0.0",
     "gulp-watch": "^4.3.9",
@@ -42,6 +43,7 @@
     "precss": "^1.4.0",
     "run-sequence": "^1.2.2",
     "vinyl-named": "^1.1.0",
+    "webpack": "^1.12.14",
     "webpack-stream": "^3.2.0"
   }
 }

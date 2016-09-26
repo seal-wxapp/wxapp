@@ -6,6 +6,7 @@ module.exports = {
 		"App": true,
 		"wx" : true,
 		"getApp":true,
+		"NODE_ENV":true,
 	},
 	"plugins": [
 		'html'

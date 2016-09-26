@@ -1,7 +1,9 @@
 //index.js
 //获取应用实例
-var util = require('../../utils/util');
+var util = require('../../utils/util.js');
 console.log(util);
+var ajaxurl = require('../../utils/ajaxurl.js');
+console.log(ajaxurl);
 var app = getApp()
 Page({
 	data: {

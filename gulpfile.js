@@ -5,6 +5,7 @@ var watch         = require('gulp-watch');
 var named         = require('vinyl-named');
 var postcss       = require('gulp-postcss');
 var webpackStream = require('webpack-stream');
+var webpack       = require('webpack');
 var watchPath     = require('gulp-watch-path');
 var chalk         = require('chalk');
 var rename        = require('gulp-rename');
@@ -14,10 +15,11 @@ var autoprefixer  = require('autoprefixer');
 var precss        = require('precss');
 var cssnano       = require('cssnano');
 var sass          = require('gulp-sass');
-var runSequence = require('run-sequence');
+var runSequence   = require('run-sequence');
+var replace       = require('gulp-replace');
 
-
-var isBuild       = false;
+var isBuild = false;
+var ES5DEV = true;
 
 var webpackConfig = {
 	resolve: {
@@ -35,6 +37,7 @@ var webpackConfig = {
 			{ test: /\.js$/, loader: 'babel', exclude: /node_modules/ },
 		]
 	},
+	plugins: [],
 	babel: { //配置babel
 		"presets": ["es2015", 'stage-2'],
 		"plugins": ["transform-runtime"]
@@ -59,6 +62,9 @@ var src  = {
 };
 var dist = './dist/';
 gulp.task('dev', function () {
+	webpackConfig.plugins.push(new webpack.DefinePlugin({
+		NODE_ENV: JSON.stringify(process.env.NODE_ENV) || 'production'
+	}));
 	gulp.start('views', 'sass', 'wxss', 'images', 'fonts', 'js', 'json');
 });
 gulp.task('dev:es5', function () {
@@ -67,7 +73,10 @@ gulp.task('dev:es5', function () {
 
 gulp.task('build', function () {
 	isBuild = true;
-	build(false,function () {
+	webpackConfig.plugins.push(new webpack.DefinePlugin({
+		NODE_ENV: JSON.stringify(process.env.NODE_ENV) || 'production'
+	}));
+	build(false, function () {
 		setTimeout(function () {
 			console.log();
 			console.log(chalk.green('	Build success!'));
@@ -76,7 +85,8 @@ gulp.task('build', function () {
 });
 gulp.task('build:es5', function () {
 	isBuild = true;
-	build(true,function () {
+	ES5DEV = false;
+	build(true, function () {
 		setTimeout(function () {
 			console.log();
 			console.log(chalk.green('	Build success!'));
@@ -132,21 +142,21 @@ gulp.task('js', function () {
 gulp.task('js:es5', function () {
 	watch([src.js], function (event) {
 		var paths = watchPath(event, src.js, dist);
-		compileJSes5(paths.srcPath,paths.srcDir.replace('src', 'dist'));
+		compileJSes5(paths.srcPath, paths.srcDir.replace('src', 'dist'));
 	})
 });
 
 gulp.task('sass:build', function () {
-	return compileSass(src.sass,dist)
+	return compileSass(src.sass, dist)
 });
 gulp.task('wxss:build', function () {
-	return compileWxss(src.wxss,dist)
+	return compileWxss(src.wxss, dist)
 });
 gulp.task('js:build', function () {
 	return compileJS([src.js]);
 });
 gulp.task('js:es5:build', function () {
-	return compileJSes5([src.js],dist);
+	return compileJSes5([src.js], dist);
 });
 function compileJS(path) {
 	
@@ -164,8 +174,10 @@ function compileJS(path) {
 	.pipe(ifElse(isBuild === true, ugjs))
 	.pipe(gulp.dest(dist))
 }
-function compileJSes5(path,dist) {
+function compileJSes5(path, dist) {
+	console.log(ES5DEV ? 'dev' : 'production')
 	return gulp.src(path)
+	.pipe(replace('NODE_ENV', ES5DEV ? 'dev' : 'production'))
 	.pipe(ifElse(isBuild === true, ugjs))
 	.pipe(gulp.dest(dist))
 }
@@ -213,9 +225,9 @@ function json() {
 	gulp.src(src.json)
 	.pipe(gulp.dest(dist))
 }
-function build(ises5,cb) {
+function build(ises5, cb) {
 	var jsbuild = ises5 ? 'js:es5:build' : 'js:build';
-	runSequence([jsbuild,'sass:build', 'wxss:build'], function () {
+	runSequence([jsbuild, 'sass:build', 'wxss:build'], function () {
 		views();
 		images();
 		fonts();
@@ -224,3 +236,8 @@ function build(ises5,cb) {
 	});
 	
 }
+gulp.task('config', function () {
+	gulp.src([src.js])
+	.pipe(gulp.dest(dist))
+});
+
