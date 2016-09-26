@@ -175,7 +175,7 @@ function compileJS(path) {
 	.pipe(gulp.dest(dist))
 }
 function compileJSes5(path, dist) {
-	console.log(ES5DEV ? 'dev' : 'production')
+	
 	return gulp.src(path)
 	.pipe(replace('NODE_ENV', ES5DEV ? 'dev' : 'production'))
 	.pipe(ifElse(isBuild === true, ugjs))
@@ -236,8 +236,4 @@ function build(ises5, cb) {
 	});
 	
 }
-gulp.task('config', function () {
-	gulp.src([src.js])
-	.pipe(gulp.dest(dist))
-});
 
